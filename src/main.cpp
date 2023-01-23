@@ -90,7 +90,10 @@ int main(int argc, char *argv[])
 				 MSG_WAITALL, (struct sockaddr *)&cliaddr,
 				 &len);
 	buffer[n] = '\0';
-	printf("Client : %s\n", buffer);
+
+	char clientAddrString[INET_ADDRSTRLEN];
+	inet_ntop(AF_INET, &(cliaddr.sin_addr), clientAddrString, INET_ADDRSTRLEN);
+	cout << n << " number of bytes recieved, from: " <<  clientAddrString << endl;
 
 	// Send DNS request to DNS Server
 	sendto(sockfd, (const char *)buffer, n,
