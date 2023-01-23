@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 	inet_pton(AF_INET, argv[1], &(dns_servaddr.sin_addr));
 	dns_server_port = stoi(argv[2]);
 	
-
+	
 	// Creating socket file descriptor
 	if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
 	{
@@ -61,8 +61,6 @@ int main(int argc, char *argv[])
 
 	memset(&servaddr, 0, sizeof(servaddr));
 	memset(&cliaddr, 0, sizeof(cliaddr));
-
-	inet_pton(AF_INET, "8.8.8.8", &(dns_servaddr.sin_addr));
 
 	// Filling server information
 	servaddr.sin_family = AF_INET; // IPv4
