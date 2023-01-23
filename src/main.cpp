@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 	// Filling dns_server information
 	dns_servaddr.sin_family = AF_INET; // IPv4
 	dns_servaddr.sin_addr.s_addr = INADDR_ANY;
-	dns_servaddr.sin_port = htons(PORT);
+	dns_servaddr.sin_port = htons(dns_server_port);
 
 	// Bind the socket with the server address
 	if (bind(sockfd, (const struct sockaddr *)&servaddr,
