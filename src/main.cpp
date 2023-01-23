@@ -30,6 +30,27 @@ int main(int argc, char *argv[])
 	int sockfd;
 	char buffer[MAXLINE];
 	struct sockaddr_in dns_servaddr, servaddr, cliaddr;
+	
+	if (argc < 3)
+	{
+		cerr << "Usage: "<< argv[0] << " " << "[DNS_SERVER_IP]"<< "[PORT NUM]"<< endl;
+		exit(EXIT_FAILURE);
+	}
+
+	if (inet_pton(AF_INET, argv[1], &(dns_servaddr.sin_addr)) != 1)
+	{
+		cerr << "Invalid IPv4 address, " << "Usage: "<< argv[0] << " "  << "[DNS_SERVER_IP]"<< "[PORT NUM]"<< endl;
+		exit(EXIT_FAILURE);
+	}
+
+	if(is_number(argv[2]) == false){
+		cerr << "Invalid port number, " << "Usage: "<< argv[0] << " "  << "[DNS_SERVER_IP]"<< "[PORT NUM]"<< endl;
+		exit(EXIT_FAILURE);
+	}
+	
+	inet_pton(AF_INET, argv[1], &(dns_servaddr.sin_addr));
+	dns_server_port = stoi(argv[2]);
+	
 
 	// Creating socket file descriptor
 	if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
