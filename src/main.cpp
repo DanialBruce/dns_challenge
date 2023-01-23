@@ -64,7 +64,8 @@ int main(int argc, char *argv[])
 
 	memset(&servaddr, 0, sizeof(servaddr));
 	memset(&cliaddr, 0, sizeof(cliaddr));
-
+	memset(&dns_servaddr, 0, sizeof(dns_servaddr));
+	
 	// Filling server information
 	servaddr.sin_family = AF_INET; // IPv4
 	servaddr.sin_addr.s_addr = INADDR_ANY;
