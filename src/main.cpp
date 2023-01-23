@@ -13,10 +13,13 @@
 #define PORT 9000
 #define MAXLINE 1024
 
+using std::cerr;
 using std::cout;
+using std::stoi;
 using std::endl;
 using std::perror;
 
+int dns_server_port;
 
 bool is_number(const std::string& s)
 {
@@ -110,6 +113,6 @@ int main(int argc, char *argv[])
 		   MSG_CONFIRM, (const struct sockaddr *)&cliaddr,
 		   len);
 
-
+	close(sockfd);
 	return 0;
 }
