@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <iostream>
 #include <string>
 
@@ -18,6 +19,11 @@
 #define DNS_PORT 53
 #define MAXLINE 1000
 
+bool is_digits(const std::string &str)
+{
+    return std::all_of(str.begin(), str.end(), ::isdigit); // C++11
+}
+
 // Driver code
 int main(int argc, char* argv[])
 {
@@ -25,7 +31,9 @@ int main(int argc, char* argv[])
 	int listenfd, dns_sockfd;
 	socklen_t len;
 	struct sockaddr_in servaddr, cliaddr, dns_servaddr;
-	bzero(&servaddr, sizeof(servaddr));
+	//bzero(&servaddr, sizeof(servaddr));
+	memset(&servaddr, 0,sizeof(servaddr));
+	memset(&dns_servaddr, 0,sizeof(dns_servaddr));
 
 	// Create a UDP Socket
 	listenfd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -55,14 +63,13 @@ int main(int argc, char* argv[])
 		int n = recvfrom(listenfd, buffer, sizeof(buffer),
 						 0, (struct sockaddr *)&cliaddr, &len); // receive message from server
 		buffer[n] = '\0';
-		puts(buffer);
-
-		// send the response
-		// sendto(listenfd, message, MAXLINE, 0,
-		//(struct sockaddr *)&cliaddr, sizeof(cliaddr));
+		printf("%d Bytes recieved\n\n", n);
+		
 		printf("DNS Query recieved, sending it to DNS server . . . \n");
+		// send to DNS server
 		send(dns_sockfd, buffer, n, 0);
 
+		//Get back the DNS server response!
 		int r = recv(dns_sockfd, buffer, 512, 0);
 
 		sendto(listenfd, buffer, r + 10, 0, (struct sockaddr *)&cliaddr, sizeof(cliaddr));
