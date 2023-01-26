@@ -13,22 +13,15 @@
 #include <iostream>
 #include <string>
 
-// server program for udp connection
-#include <stdio.h>
-#include <strings.h>
-#include <sys/types.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
+
 #define CLIENT_PORT 9000
 #define DNS_PORT 53
 #define MAXLINE 1000
 
 // Driver code
-int main()
+int main(int argc, char* argv[])
 {
 	char buffer[512];
-	char message[512];
 	int listenfd, dns_sockfd;
 	socklen_t len;
 	struct sockaddr_in servaddr, cliaddr, dns_servaddr;
