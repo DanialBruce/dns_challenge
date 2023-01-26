@@ -1,119 +1,82 @@
+// Server program
+#include <arpa/inet.h>
+#include <errno.h>
+#include <netinet/in.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
 #include <sys/types.h>
+#include <unistd.h>
+
+#include <iostream>
+#include <string>
+
+// server program for udp connection
+#include <stdio.h>
+#include <strings.h>
+#include <sys/types.h>
+#include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <sys/wait.h>
+#define CLIENT_PORT 9000
+#define DNS_PORT 53
+#define MAXLINE 1000
 
-#include <algorithm>
-#include <cstring>
-#include <iostream>
-#include <cstdio>
-
-#define PORT 9000
-#define MAXLINE 1024
-
-using std::cerr;
-using std::cout;
-using std::stoi;
-using std::endl;
-using std::perror;
-
-int dns_server_port;
-
-bool is_number(const std::string& s)
+// Driver code
+int main()
 {
-    return !s.empty() && find_if(s.begin(), 
-        s.end(), [](unsigned char c) { return !std::isdigit(c); }) == s.end();
-}
-
-
-int main(int argc, char *argv[])
-{
-	int sockfd;
-	char buffer[MAXLINE];
-	struct sockaddr_in dns_servaddr, servaddr, cliaddr;
-	
-	if (argc < 3)
-	{
-		cerr << "Usage: "<< argv[0] << " " << "[DNS_SERVER_IP]"<< "[PORT NUM]"<< endl;
-		exit(EXIT_FAILURE);
-	}
-
-	if (inet_pton(AF_INET, argv[1], &(dns_servaddr.sin_addr)) != 1)
-	{
-		cerr << "Invalid IPv4 address, " << "Usage: "<< argv[0] << " "  << "[DNS_SERVER_IP]"<< "[PORT NUM]"<< endl;
-		exit(EXIT_FAILURE);
-	}
-
-	if(is_number(argv[2]) == false){
-		cerr << "Invalid port number, " << "Usage: "<< argv[0] << " "  << "[DNS_SERVER_IP]"<< "[PORT NUM]"<< endl;
-		exit(EXIT_FAILURE);
-	}
-	
-	inet_pton(AF_INET, argv[1], &(dns_servaddr.sin_addr));
-	dns_server_port = stoi(argv[2]);
-	
-	
-	// Creating socket file descriptor
-	if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
-	{
-		perror("socket creation failed");
-		exit(EXIT_FAILURE);
-	}
-
-	memset(&servaddr, 0, sizeof(servaddr));
-	memset(&cliaddr, 0, sizeof(cliaddr));
-	memset(&dns_servaddr, 0, sizeof(dns_servaddr));
-	
-	// Filling server information
-	servaddr.sin_family = AF_INET; // IPv4
-	servaddr.sin_addr.s_addr = INADDR_ANY;
-	servaddr.sin_port = htons(PORT);
-
-	// Filling dns_server information
-	dns_servaddr.sin_family = AF_INET; // IPv4
-	dns_servaddr.sin_addr.s_addr = INADDR_ANY;
-	dns_servaddr.sin_port = htons(dns_server_port);
-
-	// Bind the socket with the server address
-	if (bind(sockfd, (const struct sockaddr *)&servaddr,
-			 sizeof(servaddr)) < 0)
-	{
-		perror("bind failed");
-		exit(EXIT_FAILURE);
-	}
-
+	char buffer[512];
+	char message[512];
+	int listenfd, dns_sockfd;
 	socklen_t len;
-	int n;
+	struct sockaddr_in servaddr, cliaddr, dns_servaddr;
+	bzero(&servaddr, sizeof(servaddr));
 
-	len = sizeof(cliaddr); // len is value/result
+	// Create a UDP Socket
+	listenfd = socket(AF_INET, SOCK_DGRAM, 0);
+	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	servaddr.sin_port = htons(CLIENT_PORT);
+	servaddr.sin_family = AF_INET;
 
-	// Listen for client, until recieve.
-	n = recvfrom(sockfd, (char *)buffer, MAXLINE,
-				 MSG_WAITALL, (struct sockaddr *)&cliaddr,
-				 &len);
-	buffer[n] = '\0';
+	dns_sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+	dns_servaddr.sin_addr.s_addr = inet_addr("8.8.8.8");
+	dns_servaddr.sin_port = htons(DNS_PORT);
+	dns_servaddr.sin_family = AF_INET;
 
-	char clientAddrString[INET_ADDRSTRLEN];
-	inet_ntop(AF_INET, &(cliaddr.sin_addr), clientAddrString, INET_ADDRSTRLEN);
-	cout << n << " number of bytes recieved, from: " <<  clientAddrString << endl;
+	dns_sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+	// bind server address to socket descriptor
+	bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr));
 
-	// Send DNS request to DNS Server
-	sendto(sockfd, (const char *)buffer, n,
-		   MSG_CONFIRM, (const struct sockaddr *)&dns_servaddr,
-		   len);
+	if (connect(dns_sockfd, (struct sockaddr *)&dns_servaddr, sizeof(dns_servaddr)) < 0)
+	{
+		printf("\nError : Connect Failed \n");
+		exit(0);
+	}
 
-	// Wait for DNS server response
-	n = recvfrom(sockfd, (char *)buffer, MAXLINE,
-				 MSG_WAITALL, (struct sockaddr *)&dns_servaddr,
-				 &len);
+	while (true)
+	{
+		// receive the datagram
+		len = sizeof(cliaddr);
+		int n = recvfrom(listenfd, buffer, sizeof(buffer),
+						 0, (struct sockaddr *)&cliaddr, &len); // receive message from server
+		buffer[n] = '\0';
+		puts(buffer);
 
-	// Rturn the DNS server response back to client.
-	sendto(sockfd, (const char *)buffer, n,
-		   MSG_CONFIRM, (const struct sockaddr *)&cliaddr,
-		   len);
+		// send the response
+		// sendto(listenfd, message, MAXLINE, 0,
+		//(struct sockaddr *)&cliaddr, sizeof(cliaddr));
+		printf("DNS Query recieved, sending it to DNS server . . . \n");
+		send(dns_sockfd, buffer, n, 0);
 
-	close(sockfd);
-	return 0;
+		int r = recv(dns_sockfd, buffer, 512, 0);
+
+		sendto(listenfd, buffer, r + 10, 0, (struct sockaddr *)&cliaddr, sizeof(cliaddr));
+
+		printf("operation done\n");
+	}
+
+	close(listenfd);
+	close(dns_sockfd);
 }
