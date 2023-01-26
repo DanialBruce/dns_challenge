@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
 		// receive the datagram
 		len = sizeof(cliaddr);
 		int n = recvfrom(listenfd, buffer, sizeof(buffer),
-						 0, (struct sockaddr *)&cliaddr, &len); // receive message from server
+						 0, (struct sockaddr *)&cliaddr, &len); // receive message from client
 		buffer[n] = '\0';
 		printf("%d Bytes recieved\n\n", n);
 		
