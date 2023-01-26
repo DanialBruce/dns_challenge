@@ -17,7 +17,6 @@
 
 #define CLIENT_PORT 9000
 #define DNS_PORT 53
-#define MAXLINE 1000
 
 bool is_digits(const std::string &str)
 {
