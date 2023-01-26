@@ -46,7 +46,6 @@ int main(int argc, char* argv[])
 	dns_servaddr.sin_port = htons(DNS_PORT);
 	dns_servaddr.sin_family = AF_INET;
 
-	dns_sockfd = socket(AF_INET, SOCK_DGRAM, 0);
 	// bind server address to socket descriptor
 	bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr));
 
