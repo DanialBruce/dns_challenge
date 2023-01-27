@@ -50,7 +50,10 @@ int main(int argc, char* argv[])
 	int listenfd, dns_sockfd, dns_port;
 	socklen_t len;
 	struct sockaddr_in servaddr, cliaddr, dns_servaddr;
+	struct timeval tv;
 
+	tv.tv_sec = 3;
+	tv.tv_usec = 5000;
 	//bzero(&servaddr, sizeof(servaddr));
 	memset(&servaddr, 0,sizeof(servaddr));
 	memset(&dns_servaddr, 0,sizeof(dns_servaddr));
@@ -92,7 +95,9 @@ int main(int argc, char* argv[])
 	/*dns_servaddr.sin_addr.s_addr = inet_addr("8.8.8.8");
 	//dns_servaddr.sin_port = htons(DNS_PORT);
 	//dns_servaddr.sin_family = AF_INET;*/
-
+	if (setsockopt(dns_sockfd, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) < 0) {
+    	perror("Error");
+	}
 	// bind server address to socket descriptor
 	bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr));
 
