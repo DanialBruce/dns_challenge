@@ -117,6 +117,13 @@ int main(int argc, char* argv[])
 		len = sizeof(cliaddr);
 		int n = recvfrom(listenfd, buffer, sizeof(buffer),
 						 0, (struct sockaddr *)&cliaddr, &len); // receive message from client
+		
+		if (n < 0)
+		{
+			perror("Error RecvFrom Client . . .:");
+		}
+		
+
 		buffer[n] = '\0';
 		printf("%d Bytes recieved, from client: %s\n\n", n, inet_ntoa(cliaddr.sin_addr));
 		
