@@ -34,7 +34,31 @@ int main(int argc, char* argv[])
 	memset(&servaddr, 0,sizeof(servaddr));
 	memset(&dns_servaddr, 0,sizeof(dns_servaddr));
 
-	// Create a UDP Socket
+	if (argc > 3 || argc < 3)
+	{
+		printf("\n\n\nUSAGE: %s [DNS_ADDRESS] [PORT]\n\n", argv[0]);
+		return 1;
+	}
+	// CONTINUE FROM HERE
+	if (isValidIpAddress(argv[1], &dns_servaddr) == false)
+	{
+		printf("\n\n\nError, Invalid IP address format, USAGE: %s [DNS_ADDRESS] [PORT]\n\n", argv[0]);
+		return 1;
+	}
+	
+
+	if ((port_is_valid(argv[2], &dns_port)) == false)
+	{
+		printf("\n\n\nError, Invalid port number, USAGE: %s [DNS_ADDRESS] [PORT]\n\n", argv[0]);
+		return 1;
+	}
+
+	dns_servaddr.sin_port = htons(dns_port);
+	printf("DNS IP address is %s\n", inet_ntoa(dns_servaddr.sin_addr));
+	printf("DNS port is %d\n\n\n", dns_port);
+
+
+	// Create a UDP Socket, UDP listener
 	listenfd = socket(AF_INET, SOCK_DGRAM, 0);
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	servaddr.sin_port = htons(CLIENT_PORT);
