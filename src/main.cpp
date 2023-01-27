@@ -49,8 +49,8 @@ bool isValidIpAddress(char *ipAddress, sockaddr_in *sa)
 
 int main(int argc, char* argv[])
 {
-	char buffer[512];
-	int listenfd, dns_sockfd, dns_port;
+	char buffer[512], trans_id_buf[2];
+	int listenfd, dns_sockfd, dns_port, count = 0;
 	socklen_t len;
 	struct sockaddr_in servaddr, cliaddr, dns_servaddr;
 	struct timeval tv;
