@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
 		int n = recvfrom(listenfd, buffer, sizeof(buffer),
 						 0, (struct sockaddr *)&cliaddr, &len); // receive message from client
 		buffer[n] = '\0';
-		printf("%d Bytes recieved\n\n", n);
+		printf("%d Bytes recieved, from client: %s\n\n", n, inet_ntoa(cliaddr.sin_addr));
 		
 		printf("DNS Query recieved, sending it to DNS server . . . \n");
 		// send to DNS server
@@ -132,7 +132,7 @@ int main(int argc, char* argv[])
 
 		printf("operation done\n");
 	}
-
+	//Normally, nothing should get here.
 	close(listenfd);
 	close(dns_sockfd);
 }
