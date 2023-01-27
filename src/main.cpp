@@ -3,8 +3,7 @@
 #include <errno.h>
 #include <netinet/in.h>
 #include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
+
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -15,21 +14,43 @@
 #include <string>
 
 
-#define CLIENT_PORT 9000
-#define DNS_PORT 53
+#define CLIENT_PORT 9000	//Port from which we listen for client(s)
+#define DEFUALT_DNS_PORT 53
+#define DEFUALT_DNS_ADDR "8.8.8.8"
 
-bool is_digits(const std::string &str)
+bool port_is_valid(const std::string &str, int *con)
 {
-    return std::all_of(str.begin(), str.end(), ::isdigit); // C++11
-}
 
+    if ((std::all_of(str.begin(), str.end(), ::isdigit))) // C++11)
+	{
+		if ((*con = std::stoi(str)) > 0)
+		{	
+			return true;
+		}
+		else{
+			return false;
+		}
+		
+	}
+	return false;
+	
+}
+bool isValidIpAddress(char *ipAddress, sockaddr_in *sa)
+{
+    int result = inet_pton(AF_INET, ipAddress, &(sa->sin_addr));
+	sa->sin_family = AF_INET;
+    return result != 0;
+}
 // Driver code
+
+
 int main(int argc, char* argv[])
 {
 	char buffer[512];
-	int listenfd, dns_sockfd;
+	int listenfd, dns_sockfd, dns_port;
 	socklen_t len;
 	struct sockaddr_in servaddr, cliaddr, dns_servaddr;
+
 	//bzero(&servaddr, sizeof(servaddr));
 	memset(&servaddr, 0,sizeof(servaddr));
 	memset(&dns_servaddr, 0,sizeof(dns_servaddr));
@@ -66,9 +87,11 @@ int main(int argc, char* argv[])
 
 	// Create a UDP socket for Forwarding DNS requests
 	dns_sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-	dns_servaddr.sin_addr.s_addr = inet_addr("8.8.8.8");
-	dns_servaddr.sin_port = htons(DNS_PORT);
-	dns_servaddr.sin_family = AF_INET;
+	
+	//init. dns addrs for use
+	/*dns_servaddr.sin_addr.s_addr = inet_addr("8.8.8.8");
+	//dns_servaddr.sin_port = htons(DNS_PORT);
+	//dns_servaddr.sin_family = AF_INET;*/
 
 	// bind server address to socket descriptor
 	bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr));
