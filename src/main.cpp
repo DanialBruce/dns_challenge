@@ -125,8 +125,12 @@ int main(int argc, char* argv[])
 		send(dns_sockfd, buffer, n, 0);
 
 		//Get back the DNS server response!
-		int r = recv(dns_sockfd, buffer, 512, 0);
-
+		int r;
+		if ((r = recv(dns_sockfd, buffer, 512, 0)) < 0)
+		{
+			perror("Error recieving response from DNS");
+		}
+		
 		// Send it back to the client.
 		sendto(listenfd, buffer, r + 10, 0, (struct sockaddr *)&cliaddr, sizeof(cliaddr));
 
