@@ -132,7 +132,7 @@ int main(int argc, char* argv[])
 		}
 		
 		// Send it back to the client.
-		sendto(listenfd, buffer, r + 10, 0, (struct sockaddr *)&cliaddr, sizeof(cliaddr));
+		sendto(listenfd, buffer, r, 0, (struct sockaddr *)&cliaddr, sizeof(cliaddr));
 
 		printf("operation done\n");
 	}
