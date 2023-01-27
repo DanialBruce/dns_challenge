@@ -40,6 +40,7 @@ int main(int argc, char* argv[])
 	servaddr.sin_port = htons(CLIENT_PORT);
 	servaddr.sin_family = AF_INET;
 
+	// Create a UDP socket for Forwarding DNS requests
 	dns_sockfd = socket(AF_INET, SOCK_DGRAM, 0);
 	dns_servaddr.sin_addr.s_addr = inet_addr("8.8.8.8");
 	dns_servaddr.sin_port = htons(DNS_PORT);
