@@ -125,8 +125,14 @@ int main(int argc, char* argv[])
 		
 
 		buffer[n] = '\0';
+		if (strncmp(buffer, trans_id_buf, 2) == 0)
+		{
+			continue;
+		}
 		printf("%d Bytes recieved, from client: %s\n\n", n, inet_ntoa(cliaddr.sin_addr));
 		
+		
+		strncpy(trans_id_buf, buffer, 2);
 		printf("DNS Query recieved, sending it to DNS server . . . \n");
 		// send to DNS server
 		send(dns_sockfd, buffer, n, 0);
@@ -141,7 +147,8 @@ int main(int argc, char* argv[])
 		// Send it back to the client.
 		sendto(listenfd, buffer, r, 0, (struct sockaddr *)&cliaddr, sizeof(cliaddr));
 
-		printf("operation done\n");
+		printf("operation done, count: %d\n", count);
+		count++;
 	}
 	//Normally, nothing should get here.
 	close(listenfd);
