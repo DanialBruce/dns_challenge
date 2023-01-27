@@ -70,6 +70,7 @@ int main(int argc, char* argv[])
 		//Get back the DNS server response!
 		int r = recv(dns_sockfd, buffer, 512, 0);
 
+		// Send it back to the client.
 		sendto(listenfd, buffer, r + 10, 0, (struct sockaddr *)&cliaddr, sizeof(cliaddr));
 
 		printf("operation done\n");
