@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
 
 	tv.tv_sec = 3;
 	tv.tv_usec = 5000;
-	//bzero(&servaddr, sizeof(servaddr));
+
 	memset(&servaddr, 0,sizeof(servaddr));
 	memset(&dns_servaddr, 0,sizeof(dns_servaddr));
 
