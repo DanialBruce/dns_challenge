@@ -18,6 +18,9 @@
 #define DEFUALT_DNS_PORT 53
 #define DEFUALT_DNS_ADDR "8.8.8.8"
 
+using std::printf;
+using std::perror;
+
 bool port_is_valid(const std::string &str, int *con)
 {
 
@@ -97,6 +100,7 @@ int main(int argc, char* argv[])
 	//dns_servaddr.sin_family = AF_INET;*/
 	if (setsockopt(dns_sockfd, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) < 0) {
     	perror("Error");
+		exit(EXIT_FAILURE);
 	}
 	// bind server address to socket descriptor
 	bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr));
